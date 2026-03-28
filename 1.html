@@ -1,0 +1,427 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>3D 渐变立方体</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            font-family: 'Segoe UI', Arial, sans-serif;
+            overflow: hidden;
+        }
+        
+        .container {
+            width: 100%;
+            max-width: 1200px;
+            padding: 20px;
+            text-align: center;
+        }
+        
+        h1 {
+            color: #fff;
+            margin-bottom: 20px;
+            font-size: 2.5rem;
+            text-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+        }
+        
+        .subtitle {
+            color: #a0a0c0;
+            margin-bottom: 40px;
+            font-size: 1.2rem;
+        }
+        
+        .cube-container {
+            width: 300px;
+            height: 300px;
+            margin: 40px auto;
+            perspective: 1000px;
+        }
+        
+        .cube {
+            width: 100%;
+            height: 100%;
+            position: relative;
+            transform-style: preserve-3d;
+            transform: rotateX(-15deg) rotateY(-15deg);
+            animation: rotateCube 20s infinite linear;
+        }
+        
+        /* 立方体面通用样式 */
+        .face {
+            position: absolute;
+            width: 200px;
+            height: 200px;
+            border-radius: 8px;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.4);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-weight: bold;
+            color: white;
+            text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.8);
+            font-size: 1.2rem;
+            overflow: hidden;
+        }
+        
+        /* 前、后、左、右、上、下面 */
+        .front {
+            background: linear-gradient(to bottom, red, green);
+            transform: translateZ(100px);
+        }
+        
+        .back {
+            background: linear-gradient(45deg, #ff0080, #00ff80);
+            transform: rotateY(180deg) translateZ(100px);
+        }
+        
+        .right {
+            background: linear-gradient(135deg, #0080ff, #80ff00);
+            transform: rotateY(90deg) translateZ(100px);
+        }
+        
+        .left {
+            background: linear-gradient(-45deg, #ff8000, #8000ff);
+            transform: rotateY(-90deg) translateZ(100px);
+        }
+        
+        .top {
+            background: linear-gradient(30deg, #ff0000, #ffff00);
+            transform: rotateX(90deg) translateZ(100px);
+        }
+        
+        .bottom {
+            background: linear-gradient(-30deg, #00ffff, #0000ff);
+            transform: rotateX(-90deg) translateZ(100px);
+        }
+        
+        /* 使用skewX和skewY的立方体 */
+        .cube-skew {
+            width: 100%;
+            height: 100%;
+            position: relative;
+            transform-style: preserve-3d;
+            transform: rotateX(-15deg) rotateY(-15deg);
+            animation: rotateCubeSkew 15s infinite linear;
+            margin-top: 60px;
+        }
+        
+        /* 使用skew变换的面 */
+        .face-skew {
+            position: absolute;
+            width: 200px;
+            height: 200px;
+            border-radius: 8px;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.4);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-weight: bold;
+            color: white;
+            text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.8);
+            font-size: 1.2rem;
+            overflow: hidden;
+        }
+        
+        .front-skew {
+            background: linear-gradient(to bottom, red, green);
+            transform: translateZ(100px) skewX(5deg) skewY(-5deg);
+        }
+        
+        .back-skew {
+            background: linear-gradient(45deg, #ff0080, #00ff80);
+            transform: rotateY(180deg) translateZ(100px) skewX(-5deg) skewY(5deg);
+        }
+        
+        .right-skew {
+            background: linear-gradient(135deg, #0080ff, #80ff00);
+            transform: rotateY(90deg) translateZ(100px) skewX(10deg) skewY(0deg);
+        }
+        
+        .left-skew {
+            background: linear-gradient(-45deg, #ff8000, #8000ff);
+            transform: rotateY(-90deg) translateZ(100px) skewX(0deg) skewY(10deg);
+        }
+        
+        .top-skew {
+            background: linear-gradient(30deg, #ff0000, #ffff00);
+            transform: rotateX(90deg) translateZ(100px) skewX(-10deg) skewY(-10deg);
+        }
+        
+        .bottom-skew {
+            background: linear-gradient(-30deg, #00ffff, #0000ff);
+            transform: rotateX(-90deg) translateZ(100px) skewX(10deg) skewY(-5deg);
+        }
+        
+        /* 动画 */
+        @keyframes rotateCube {
+            0% { transform: rotateX(-15deg) rotateY(0deg); }
+            100% { transform: rotateX(-15deg) rotateY(360deg); }
+        }
+        
+        @keyframes rotateCubeSkew {
+            0% { transform: rotateX(-15deg) rotateY(0deg); }
+            100% { transform: rotateX(-15deg) rotateY(-360deg); }
+        }
+        
+        .controls {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            margin-top: 40px;
+            flex-wrap: wrap;
+        }
+        
+        button {
+            background: linear-gradient(to right, #4a00e0, #8e2de2);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 30px;
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: bold;
+            transition: all 0.3s;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+        }
+        
+        button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+        }
+        
+        button:active {
+            transform: translateY(1px);
+        }
+        
+        .description {
+            color: #ccc;
+            max-width: 800px;
+            margin: 30px auto;
+            line-height: 1.6;
+            background: rgba(255, 255, 255, 0.05);
+            padding: 20px;
+            border-radius: 10px;
+            text-align: left;
+        }
+        
+        .code-highlight {
+            color: #4fc3f7;
+            font-weight: bold;
+        }
+        
+        .cubes-wrapper {
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 80px;
+            margin-top: 20px;
+        }
+        
+        .cube-box {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        
+        .cube-label {
+            color: white;
+            margin-top: 20px;
+            font-size: 1.3rem;
+            font-weight: bold;
+        }
+        
+        @media (max-width: 768px) {
+            .cubes-wrapper {
+                flex-direction: column;
+                align-items: center;
+                gap: 40px;
+            }
+            
+            .cube-container {
+                width: 250px;
+                height: 250px;
+            }
+            
+            .face, .face-skew {
+                width: 150px;
+                height: 150px;
+            }
+            
+            .front, .back, .right, .left, .top, .bottom {
+                transform: translateZ(75px);
+            }
+            
+            .front-skew, .back-skew, .right-skew, .left-skew, .top-skew, .bottom-skew {
+                transform-origin: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>3D 渐变立方体</h1>
+        <p class="subtitle">使用CSS 3D变换和线性渐变创建的视觉效果</p>
+        
+        <div class="cubes-wrapper">
+            <div class="cube-box">
+                <div class="cube-label">标准3D立方体</div>
+                <div class="cube-container">
+                    <div class="cube">
+                        <div class="face front">前面<br>红色到绿色</div>
+                        <div class="face back">后面</div>
+                        <div class="face right">右面</div>
+                        <div class="face left">左面</div>
+                        <div class="face top">顶面</div>
+                        <div class="face bottom">底面</div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="cube-box">
+                <div class="cube-label">使用skewX/skewY的立方体</div>
+                <div class="cube-container">
+                    <div class="cube-skew">
+                        <div class="face-skew front-skew">前面<br>红色到绿色</div>
+                        <div class="face-skew back-skew">后面</div>
+                        <div class="face-skew right-skew">右面</div>
+                        <div class="face-skew left-skew">左面</div>
+                        <div class="face-skew top-skew">顶面</div>
+                        <div class="face-skew bottom-skew">底面</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="controls">
+            <button id="pauseBtn">暂停/继续旋转</button>
+            <button id="resetBtn">重置旋转</button>
+            <button id="speedUpBtn">加速旋转</button>
+            <button id="speedDownBtn">减速旋转</button>
+        </div>
+        
+        <div class="description">
+            <h3>技术实现说明：</h3>
+            <p>1. 前面的立方体使用标准的3D变换，每个面通过<code class="code-highlight">rotateY()</code>、<code class="code-highlight">rotateX()</code>和<code class="code-highlight">translateZ()</code>进行定位。</p>
+            <p>2. 后面的立方体在标准变换的基础上添加了<code class="code-highlight">skewX()</code>和<code class="code-highlight">skewY()</code>变换，创建了斜切效果。</p>
+            <p>3. 前面的立方体使用了从<code class="code-highlight">红色渐变到绿色</code>的线性渐变，符合要求。</p>
+            <p>4. 所有面都使用了不同的线性渐变，并且立方体在3D空间中持续旋转。</p>
+            <p>5. 通过CSS动画实现自动旋转，JavaScript添加了交互控制功能。</p>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const cube = document.querySelector('.cube');
+            const cubeSkew = document.querySelector('.cube-skew');
+            const pauseBtn = document.getElementById('pauseBtn');
+            const resetBtn = document.getElementById('resetBtn');
+            const speedUpBtn = document.getElementById('speedUpBtn');
+            const speedDownBtn = document.getElementById('speedDownBtn');
+            
+            let isPaused = false;
+            let rotationSpeed = 1;
+            
+            // 暂停/继续旋转
+            pauseBtn.addEventListener('click', function() {
+                isPaused = !isPaused;
+                
+                if (isPaused) {
+                    cube.style.animationPlayState = 'paused';
+                    cubeSkew.style.animationPlayState = 'paused';
+                    pauseBtn.textContent = '继续旋转';
+                } else {
+                    cube.style.animationPlayState = 'running';
+                    cubeSkew.style.animationPlayState = 'running';
+                    pauseBtn.textContent = '暂停旋转';
+                }
+            });
+            
+            // 重置旋转
+            resetBtn.addEventListener('click', function() {
+                // 移除动画
+                cube.style.animation = 'none';
+                cubeSkew.style.animation = 'none';
+                
+                // 强制重排以应用更改
+                void cube.offsetWidth;
+                void cubeSkew.offsetWidth;
+                
+                // 重新应用动画
+                cube.style.animation = `rotateCube ${20/rotationSpeed}s infinite linear`;
+                cubeSkew.style.animation = `rotateCubeSkew ${15/rotationSpeed}s infinite linear`;
+                
+                if (isPaused) {
+                    cube.style.animationPlayState = 'paused';
+                    cubeSkew.style.animationPlayState = 'paused';
+                }
+            });
+            
+            // 加速旋转
+            speedUpBtn.addEventListener('click', function() {
+                if (rotationSpeed < 5) {
+                    rotationSpeed += 0.5;
+                    updateAnimationSpeed();
+                }
+            });
+            
+            // 减速旋转
+            speedDownBtn.addEventListener('click', function() {
+                if (rotationSpeed > 0.5) {
+                    rotationSpeed -= 0.5;
+                    updateAnimationSpeed();
+                }
+            });
+            
+            // 更新动画速度
+            function updateAnimationSpeed() {
+                cube.style.animationDuration = `${20/rotationSpeed}s`;
+                cubeSkew.style.animationDuration = `${15/rotationSpeed}s`;
+            }
+            
+            // 添加鼠标控制旋转
+            let isMouseDown = false;
+            let lastMouseX = 0;
+            let lastMouseY = 0;
+            
+            document.addEventListener('mousedown', function(e) {
+                isMouseDown = true;
+                lastMouseX = e.clientX;
+                lastMouseY = e.clientY;
+            });
+            
+            document.addEventListener('mousemove', function(e) {
+                if (!isMouseDown) return;
+                
+                const deltaX = e.clientX - lastMouseX;
+                const deltaY = e.clientY - lastMouseY;
+                
+                // 计算旋转角度
+                const rotateY = parseInt(cube.style.transform?.match(/rotateY\(([^)]+)\)/)?.[1] || '-15') + deltaX * 0.5;
+                const rotateX = parseInt(cube.style.transform?.match(/rotateX\(([^)]+)\)/)?.[1] || '-15') - deltaY * 0.5;
+                
+                // 应用旋转
+                cube.style.transform = `rotateX(${rotateX}deg) rotateY(${rotateY}deg)`;
+                cubeSkew.style.transform = `rotateX(${rotateX}deg) rotateY(${rotateY}deg)`;
+                
+                lastMouseX = e.clientX;
+                lastMouseY = e.clientY;
+            });
+            
+            document.addEventListener('mouseup', function() {
+                isMouseDown = false;
+            });
+        });
+    </script>
+</body>
+</html>
