@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>一元二次方程求解器</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 600px;
+            margin: 50px auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .container {
+            background-color: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #333;
+            text-align: center;
+        }
+        input[type="number"] {
+            width: 100%;
+            padding: 10px;
+            margin: 10px 0;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 16px;
+        }
+        button {
+            background-color: #4CAF50;
+            color: white;
+            padding: 12px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            width: 100%;
+            margin-top: 10px;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
+        .result {
+            margin-top: 20px;
+            padding: 15px;
+            background-color: #e7f3ff;
+            border-left: 6px solid #2196F3;
+            display: none;
+        }
+        .error {
+            margin-top: 20px;
+            padding: 15px;
+            background-color: #ffebee;
+            border-left: 6px solid #f44336;
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>一元二次方程求解器</h1>
+        <p>求解 ax² + bx + c = 0</p>
+        
+        <label for="a">请输入系数 a:</label>
+        <input type="number" id="a" step="any" placeholder="例如: 1">
+        
+        <label for="b">请输入系数 b:</label>
+        <input type="number" id="b" step="any" placeholder="例如: -5">
+        
+        <label for="c">请输入系数 c:</label>
+        <input type="number" id="c" step="any" placeholder="例如: 6">
+        
+        <button onclick="solveEquation()">求解方程</button>
+        
+        <div id="result" class="result"></div>
+        <div id="error" class="error"></div>
+        
+        <p style="margin-top: 30px; font-style: italic;">
+            提示：点击按钮后，结果也会在浏览器控制台中显示（按F12查看）
+        </p>
+    </div>
+
+    <script>
+        function solveEquation() {
+            // 获取输入值
+            let a = parseFloat(document.getElementById('a').value);
+            let b = parseFloat(document.getElementById('b').value);
+            let c = parseFloat(document.getElementById('c').value);
+            
+            // 隐藏之前的错误和结果
+            document.getElementById('result').style.display = 'none';
+            document.getElementById('error').style.display = 'none';
+            
+            // 检查输入是否有效
+            if (isNaN(a) || isNaN(b) || isNaN(c)) {
+                showError("输入无效！请输入有效的数字。");
+                return;
+            }
+            
+            if (a === 0) {
+                showError("系数 a 不能为 0，因为这不再是二次方程！");
+                return;
+            }
+            
+            // 计算判别式 delta = b * b - 4 * a * c
+            let delta = b * b - 4 * a * c;
+            
+            if (delta < 0) {
+                showError("判别式 delta < 0，方程无实数根！");
+            } else {
+                // 计算两个根
+                let sqrtDelta = Math.sqrt(delta);
+                let x1 = (-b + sqrtDelta) / (2 * a);
+                let x2 = (-b - sqrtDelta) / (2 * a);
+                
+                // 显示结果
+                let resultDiv = document.getElementById('result');
+                resultDiv.innerHTML = `
+                    <h3>方程的解：</h3>
+                    <p><strong>方程：</strong>${formatEquation(a, b, c)}</p>
+                    <p><strong>判别式 Δ =</strong> ${delta}</p>
+                    <p><strong>x₁ =</strong> ${x1.toFixed(4)}</p>
+                    <p><strong>x₂ =</strong> ${x2.toFixed(4)}</p>
+                `;
+                resultDiv.style.display = 'block';
+                
+                // 同时在控制台输出结果
+                console.log("方程 ax² + bx + c = 0 的系数为：");
+                console.log("a =", a);
+                console.log("b =", b);
+                console.log("c =", c);
+                console.log("判别式 Δ =", delta);
+                console.log("x1 =", x1);
+                console.log("x2 =", x2);
+            }
+        }
+        
+        function formatEquation(a, b, c) {
+            let equation = "";
+            
+            // 添加 a*x^2 项
+            if (a === 1) {
+                equation += "x²";
+            } else if (a === -1) {
+                equation += "-x²";
+            } else {
+                equation += a + "x²";
+            }
+            
+            // 添加 b*x 项
+            if (b > 0) {
+                equation += " + ";
+                if (b === 1) {
+                    equation += "x";
+                } else {
+                    equation += b + "x";
+                }
+            } else if (b < 0) {
+                if (b === -1) {
+                    equation += " - x";
+                } else {
+                    equation += " - " + Math.abs(b) + "x";
+                }
+            }
+            
+            // 添加常数项 c
+            if (c > 0) {
+                equation += " + " + c;
+            } else if (c < 0) {
+                equation += " - " + Math.abs(c);
+            }
+            
+            equation += " = 0";
+            return equation;
+        }
+        
+        function showError(message) {
+            let errorDiv = document.getElementById('error');
+            errorDiv.innerHTML = "<h3>错误：</h3><p>" + message + "</p>";
+            errorDiv.style.display = 'block';
+            
+            // 在控制台也输出错误信息
+            console.error(message);
+        }
+    </script>
+</body>
+</html>
